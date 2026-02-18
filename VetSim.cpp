@@ -7,7 +7,7 @@
  *
  * Copyright (c) 2019-2021 VetSim, Cornell University College of Veterinary Medicine Ithaca, NY
  * Copyright (c) 2019-2025 ITown Design, Ithaca, NY
- * 
+ *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, version 3.
@@ -153,10 +153,10 @@ int vetsim()
 	extern struct obsData obsd;
 	setvbuf(stdout, NULL, _IONBF, 0);
 	char cmd[BUF_SIZE];
-	
+
 #ifdef DO_COMM
 	LPCWSTR pcCommPort = L"COM5";
-//	TCHAR *pcCommPort = TEXT("COM3");
+	//	TCHAR *pcCommPort = TEXT("COM3");
 	std::cout << "Opening COMM Port 5" << endl;
 	hComm = CreateFile(pcCommPort,
 		GENERIC_READ | GENERIC_WRITE,
@@ -164,14 +164,14 @@ int vetsim()
 		NULL,
 		OPEN_EXISTING,
 		0, // FILE_FLAG_OVERLAPPED,
-		NULL );
+		NULL);
 	if (hComm == INVALID_HANDLE_VALUE)
 	{
 		//std::cout << "ER!" << endl;// error opening port; abort
 		//std::cout << GetLastError();
 		DWORD error = GetLastError();
 		cout << "CreateFile returns " << hComm << " : " << error << " : " << std::system_category().message(error) << endl;
-		
+
 		if (GetLastError() == 2)
 		{
 			std::cout << "Port 5 is not available!" << endl;
@@ -182,7 +182,7 @@ int vetsim()
 			std::string message = std::system_category().message(error);
 			std::cout << message << endl;
 		}
-		
+
 		return false;
 	}
 	else
@@ -197,7 +197,7 @@ int vetsim()
 	{
 		UINT error = GetLastError();
 		sprintf_s(msg, "SetPortStatus: BuildCommDCB failed: GetLastError = %d", error);
-		std::cout <<  msg << endl;
+		std::cout << msg << endl;
 		return false;
 	}
 	mComDCB.fAbortOnError = (DWORD)1;
@@ -225,7 +225,7 @@ int vetsim()
 
 	if (startPHPServer())
 	{
-		printf("Could not start PHP Server\n" );
+		printf("Could not start PHP Server\n");
 		sprintf_s(msg_buf, BUF_SIZE, "%s", "Could not start PHP Server");
 		log_message("", msg_buf);
 		exit(202);
@@ -237,9 +237,9 @@ int vetsim()
 		log_message("", msg_buf);
 	}
 	// Open web page
-	sprintf_s(cmd, BUF_SIZE, "start http://%s:%d/sim-ii", PHP_SERVER_ADDR, PHP_SERVER_PORT );
+	sprintf_s(cmd, BUF_SIZE, "start http://%s:%d/sim-ii", PHP_SERVER_ADDR, PHP_SERVER_PORT);
 	system(cmd);
-	
+
 	obsd.obsWnd = NULL;
 
 	while (1)
@@ -268,7 +268,7 @@ int vetsim()
 		simmgrRun();
 	}
 #ifdef DEBUG
-	printf("Close window to exit\n" );
+	printf("Close window to exit\n");
 	while (1)
 	{
 		Sleep(10);
@@ -296,7 +296,7 @@ simmgrInitialize(void)
 	memset(simmgr_shm, 0, sizeof(struct simmgr_shm));
 
 	// hdr
-	sprintf_s(simmgr_shm->hdr.version, STR_SIZE, "%s", WVSversion );
+	sprintf_s(simmgr_shm->hdr.version, STR_SIZE, "%s", WVSversion);
 	simmgr_shm->hdr.size = sizeof(struct simmgr_shm);
 
 
@@ -362,7 +362,7 @@ simmgrInitialize(void)
 
 	clearAllTrends();
 
-	timer_start(hrcheck_handler, 5 );
+	timer_start(hrcheck_handler, 5);
 	timer_start(awrr_check, 10);
 }
 
@@ -416,6 +416,7 @@ resetAllParameters(void)
 	simmgr_shm->status.respiration.rate = 20;
 	simmgr_shm->status.respiration.spo2 = 95;
 	simmgr_shm->status.respiration.etco2 = 34;
+	sprintf_s(simmgr_shm->status.respiration.rhythm, STR_SIZE, "%s", "normal");
 	simmgr_shm->status.respiration.etco2_indicator = 0;
 	simmgr_shm->status.respiration.spo2_indicator = 0;
 	simmgr_shm->status.respiration.chest_movement = 0;
@@ -835,7 +836,7 @@ shock_check(void)
 		// Check for a shock time that seems out of order
 		if (shockStartTime > now)
 		{
-			snprintf(msg_buf, sizeof(msg_buf), "shockStartTime (%llu) is greater than now (%llu)", shockStartTime, now );
+			snprintf(msg_buf, sizeof(msg_buf), "shockStartTime (%llu) is greater than now (%llu)", shockStartTime, now);
 			lockAndComment(msg_buf);
 			simmgr_shm->status.defibrillation.shock = 0;
 			shockStartTime = 0;
@@ -874,7 +875,7 @@ void hrLogBeat(void)
 		hrLogNext = 0;
 	}
 }
-void hrcheck_handler(void )     // current system time  )    // additional information 
+void hrcheck_handler(void)     // current system time  )    // additional information 
 {
 	ULONGLONG now; // Current msec time
 	int prev;
@@ -959,7 +960,7 @@ void hrcheck_handler(void )     // current system time  )    // additional infor
 				{
 					prev -= 1;
 				}
-				if ( setRate > 160 )
+				if (setRate > 160)
 				{
 					calcLimit = HR_CALC_LIMIT_FAST;
 				}
@@ -1029,7 +1030,7 @@ void hrcheck_handler(void )     // current system time  )    // additional infor
 					(newRate >= (setRate - 5)))
 				{
 					newRate = setRate;
-				}				
+				}
 			}
 			*/
 			simmgr_shm->status.cardiac.avg_rate = newRate;
@@ -1410,9 +1411,9 @@ scan_commands(void)
 			else if (scenario_state == ScenarioState::ScenarioStopped)
 			{
 				printf("Starting start_scenario\n");
-				start_task("start_scenario", start_scenario );
+				start_task("start_scenario", start_scenario);
 			}
-			else if(scenario_state == ScenarioState::ScenarioRunning)
+			else if (scenario_state == ScenarioState::ScenarioRunning)
 			{
 				printf("Error: scenario_state is Running \n");
 			}
@@ -1445,7 +1446,7 @@ scan_commands(void)
 	}
 	if (strlen(simmgr_shm->instructor.scenario.active) > 0)
 	{
-		sprintf_s(msg_buf, BUF_SIZE,"Set Active: %s State %d", simmgr_shm->instructor.scenario.active, scenario_state);
+		sprintf_s(msg_buf, BUF_SIZE, "Set Active: %s State %d", simmgr_shm->instructor.scenario.active, scenario_state);
 		log_message("", msg_buf);
 		switch (scenario_state)
 		{
@@ -1505,7 +1506,7 @@ scan_commands(void)
 					simmgr_shm->instructor.cardiac.transfer_time);
 				if (simmgr_shm->instructor.cardiac.transfer_time >= 0)
 				{
-					sprintf_s(buf, BUF_SIZE, "Setting: %s: %d time %d", "Cardiac Rate",simmgr_shm->instructor.cardiac.rate, simmgr_shm->instructor.cardiac.transfer_time);
+					sprintf_s(buf, BUF_SIZE, "Setting: %s: %d time %d", "Cardiac Rate", simmgr_shm->instructor.cardiac.rate, simmgr_shm->instructor.cardiac.transfer_time);
 				}
 				else
 				{
@@ -1731,6 +1732,8 @@ scan_commands(void)
 	simmgr_shm->instructor.cardiac.transfer_time = -1;
 
 	// Respiration
+	/* Replace the Respiration handling block inside scan_commands() with this updated block */
+	// Respiration
 	if (strlen(simmgr_shm->instructor.respiration.left_lung_sound) > 0)
 	{
 		sprintf_s(simmgr_shm->status.respiration.left_lung_sound, STR_SIZE, "%s", simmgr_shm->instructor.respiration.left_lung_sound);
@@ -1773,9 +1776,21 @@ scan_commands(void)
 		simmgr_shm->status.respiration.right_lung_sound_mute = simmgr_shm->instructor.respiration.right_lung_sound_mute;
 		simmgr_shm->instructor.respiration.right_lung_sound_mute = -1;
 	}
+	// Apply instructor respiration rhythm (new)
+	if (strlen(simmgr_shm->instructor.respiration.rhythm) > 0)
+	{
+		if (strcmp(simmgr_shm->status.respiration.rhythm, simmgr_shm->instructor.respiration.rhythm) != 0)
+		{
+			sprintf_s(simmgr_shm->status.respiration.rhythm, STR_SIZE, "%s", simmgr_shm->instructor.respiration.rhythm);
+			sprintf_s(buf, BUF_SIZE, "Setting: Respiration Rhythm = %s", simmgr_shm->status.respiration.rhythm);
+			simlog_entry(buf);
+		}
+		// clear staged value
+		simmgr_shm->instructor.respiration.rhythm[0] = 0;
+	}
 	if (simmgr_shm->instructor.respiration.rate >= 0)
 	{
-		sprintf_s(msg_buf, BUF_SIZE,"Setting: Resp Rate = %d -> %d : %d", simmgr_shm->status.respiration.rate, simmgr_shm->instructor.respiration.rate, simmgr_shm->instructor.respiration.transfer_time);
+		sprintf_s(msg_buf, BUF_SIZE, "Setting: Resp Rate = %d -> %d : %d", simmgr_shm->status.respiration.rate, simmgr_shm->instructor.respiration.rate, simmgr_shm->instructor.respiration.transfer_time);
 		log_message("", msg_buf);
 		simmgr_shm->status.respiration.rate = setTrend(&respirationTrend,
 			simmgr_shm->instructor.respiration.rate,
@@ -2073,13 +2088,13 @@ scan_commands(void)
 					nibp_next_time = now + ((LONGLONG)simmgr_shm->status.cardiac.nibp_freq * 60);
 					nibp_state = NibpState::NibpWaiting;
 
-					sprintf_s(msg_buf, BUF_SIZE,"NibpState Change: Running to Waiting");
+					sprintf_s(msg_buf, BUF_SIZE, "NibpState Change: Running to Waiting");
 					log_message("", msg_buf);
 				}
 				else
 				{
 					nibp_state = NibpState::NibpIdle;
-					sprintf_s(msg_buf, BUF_SIZE,"NibpState Change: Running to Idle");
+					sprintf_s(msg_buf, BUF_SIZE, "NibpState Change: Running to Idle");
 					log_message("", msg_buf);
 				}
 			}
@@ -2216,7 +2231,7 @@ start_scenario(void)
 		//}
 		//else
 		//{
-			updateScenarioState(ScenarioState::ScenarioRunning);
+		updateScenarioState(ScenarioState::ScenarioRunning);
 		//}
 	}
 	return (0);
@@ -2239,9 +2254,9 @@ checkEvents(void)
 		takeInstructorLock();
 		while (simmgr_shm->lastEventLogged != simmgr_shm->eventListNextWrite)
 		{
-			sprintf_s(msg_buf, BUF_SIZE, "Event: %d (%d) %s", simmgr_shm->lastEventLogged, 
-							simmgr_shm->eventListNextWrite,
-							simmgr_shm->eventList[simmgr_shm->lastEventLogged].eventName);
+			sprintf_s(msg_buf, BUF_SIZE, "Event: %d (%d) %s", simmgr_shm->lastEventLogged,
+				simmgr_shm->eventListNextWrite,
+				simmgr_shm->eventList[simmgr_shm->lastEventLogged].eventName);
 
 			simlog_entry(msg_buf);
 			simmgr_shm->lastEventLogged++;
@@ -2254,7 +2269,7 @@ checkEvents(void)
 		{
 			if (strlen(simmgr_shm->commentList[simmgr_shm->lastCommentLogged].comment) == 0)
 			{
-				sprintf_s(msg_buf, BUF_SIZE,"Null Comment: lastCommentLogged is %d simmgr_shm->commentListNext is %d State is %d\n",
+				sprintf_s(msg_buf, BUF_SIZE, "Null Comment: lastCommentLogged is %d simmgr_shm->commentListNext is %d State is %d\n",
 					simmgr_shm->lastCommentLogged, simmgr_shm->commentListNext, scenario_state);
 				log_message("Error", msg_buf);
 			}

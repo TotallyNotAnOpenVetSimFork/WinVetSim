@@ -241,6 +241,12 @@ respiration_parse(const char* elem, const char* value, struct respiration* resp)
 	{
 		sprintf_s(resp->right_lung_sound, STR_SIZE, "%s", value);
 	}
+	else if (strcmp(elem, "rhythm") == 0)
+	{
+
+		// Accept textual respiration rhythm values from the instructor (e.g. "normal", "apnea", "irregular")
+		sprintf_s(resp->rhythm, STR_SIZE, "%s", value);
+	}
 	/* These are set by sim-mgr, not instructor
 	else if ( strcmp(elem, "inhalation_duration" ) == 0 )
 	{
@@ -465,12 +471,12 @@ general_parse(const char* elem, const char* value, struct general* gen)
 			gen->temperature_units[0] = 'F';
 			gen->temperature_units[1] = 0;
 		}
-		else if ( value[0] == 'C' || value[0] == 'c')
+		else if (value[0] == 'C' || value[0] == 'c')
 		{
 			gen->temperature_units[0] = 'C';
 			gen->temperature_units[1] = 0;
 		}
- 	}
+	}
 	else if (strcmp(elem, "temperature") == 0)
 	{
 		gen->temperature = atoi(value);
@@ -622,6 +628,8 @@ initializeParameterStruct(struct instructor* initParams)
 	initParams->respiration.transfer_time = -1;
 	initParams->respiration.manual_breath = -1;
 	initParams->respiration.manual_count = -1;
+	// rhythm: empty string means "no change" when used as instructor staging
+	initParams->respiration.rhythm[0] = 0;
 
 	initParams->general.temperature = -1;
 	initParams->general.temperature_enable = -1;
@@ -742,7 +750,7 @@ getValueFromName(char* param_class, char* param_element)
 	{
 		if (strcmp(param_element, "spo2") == 0)
 			rval = simmgr_shm->status.respiration.spo2;
-		else if ( (strcmp(param_element, "awRR") == 0) || (strcmp(param_element, "awrr") == 0) )
+		else if ((strcmp(param_element, "awRR") == 0) || (strcmp(param_element, "awrr") == 0))
 			rval = simmgr_shm->status.respiration.awRR;
 		else if (strcmp(param_element, "rate") == 0)
 			rval = simmgr_shm->status.respiration.rate;

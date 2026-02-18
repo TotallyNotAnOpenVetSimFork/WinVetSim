@@ -189,6 +189,7 @@ struct respiration
 	int awRR;					// Calculated rate
 	int etco2;					// End Tidal CO2
 	int transfer_time;			// Trend length for change in rate;
+	char rhythm[STR_SIZE];		// Rhythm for breathing pattern
 	int etco2_indicator;
 	int spo2_indicator;
 	int chest_movement;
@@ -429,7 +430,7 @@ struct trend
 
 // Prototypes
 // 
-int	initSHM(void );
+int	initSHM(void);
 void log_message_init(void);
 void log_message(const char* filename, const char* message);
 //void log_messaget(const char* filename, TCHAR* message);

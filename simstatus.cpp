@@ -16,6 +16,7 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
  * General Public License for more details.
  *
+ *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
 */
@@ -40,7 +41,7 @@ void makejson(string key, string content)
 {
 	htmlReply += "\"" + key + "\":\"" + content + "\"";
 }
-void makejson(string key, char *content)
+void makejson(string key, char* content)
 {
 	htmlReply += "\"" + key + "\":\"" + content + "\"";
 }
@@ -81,7 +82,7 @@ char smbuf[BUF_SIZE];		// Used for logging messages
 
 char recvbuf[DEFAULT_BUFLEN];
 char firstLine[DEFAULT_BUFLEN];
-int simstatusHandleCommand(char *args);
+int simstatusHandleCommand(char* args);
 void sendNotFound(char* path);
 
 void
@@ -150,7 +151,7 @@ simstatusMain(void)
 			// Receive HTTP Header
 			ZeroMemory(recvbuf, recvbuflen);
 			iResult = recv(cfd, recvbuf, recvbuflen, 0);
-			if (iResult > 0) 
+			if (iResult > 0)
 			{
 				//printf("Bytes received: %d\n", iResult);
 				//cout << "START-------\n" << recvbuf << "\n---------END\n" << endl;
@@ -203,8 +204,8 @@ simstatusMain(void)
 				else if (method == 2)
 				{
 					// Args are in the last line of the Request header
-					
-					for ( i = iResult ; i >= 0 ; i-- )
+
+					for (i = iResult; i >= 0; i--)
 					{
 						if (i < sizeof(recvbuf))
 						{
@@ -247,7 +248,7 @@ simstatusMain(void)
 						*cptr = 0;
 					}
 				}
-				
+
 				if (path)
 				{
 					//cout << "Path:      " << path << endl;
@@ -262,11 +263,11 @@ simstatusMain(void)
 				{
 					if (strcmp(path, "simstatus.cgi") == 0)
 					{
-						simstatusHandleCommand(args );
+						simstatusHandleCommand(args);
 					}
 					else if (strcmp(path, "cgi-bin/simstatus.cgi") == 0)
 					{
-						simstatusHandleCommand(args );
+						simstatusHandleCommand(args);
 					}
 					else
 					{
@@ -275,7 +276,7 @@ simstatusMain(void)
 				}
 				// Send reply
 				//cout << "Returning\n------------\n" << htmlReply << "\n------------\n" << endl;
-				iSendResult = send(cfd,  htmlReply.c_str(), (int)htmlReply.length(),  0);
+				iSendResult = send(cfd, htmlReply.c_str(), (int)htmlReply.length(), 0);
 				if (iSendResult == SOCKET_ERROR) {
 					printf("send failed: %d\n", WSAGetLastError());
 				}
@@ -288,7 +289,7 @@ simstatusMain(void)
 			{
 				//printf("Connection closing...\n");
 			}
-			else 
+			else
 			{
 				printf("recv failed: %d\n", WSAGetLastError());
 			}
@@ -308,7 +309,7 @@ simstatusMain(void)
 			// Close the application
 			ExitProcess(0);
 #endif
-			
+
 		}
 	}
 	exit(203);
@@ -331,7 +332,7 @@ Cookie: userID = 6; PHPSESSID = jtha8dsa284hes9ehtlvj3bpnh
 
 */
 void
-sendNotFound(char *path)
+sendNotFound(char* path)
 {
 	string str(path);
 
@@ -357,7 +358,7 @@ struct argument
 char defaultArgs[] = "status=1";
 
 int
-simstatusHandleCommand(char *args)
+simstatusHandleCommand(char* args)
 {
 	char buffer[MSG_LENGTH];
 	char cmd[32];
@@ -395,7 +396,7 @@ simstatusHandleCommand(char *args)
 		}
 		arg.key = keyP;
 		arg.value = valP;
-		argList.insert(pair<int,argument>(i, arg));
+		argList.insert(pair<int, argument>(i, arg));
 		if (nextP != NULL)
 		{
 			keyP = nextP;
@@ -431,7 +432,7 @@ simstatusHandleCommand(char *args)
 	//makejson("date", buffer);
 	//htmlReply += ",\n    ";
 
-	for (itr = argList.begin(); itr != argList.end(); ++itr) 
+	for (itr = argList.begin(); itr != argList.end(); ++itr)
 	{
 		arg = itr->second;
 		key = arg.key;
@@ -559,7 +560,7 @@ simstatusHandleCommand(char *args)
 			//htmlReply += ",\n";
 			//makejson("date_t", simmgr_shm->server.server_time );
 		}
-		
+
 		else if (key.compare("ip") == 0)
 		{
 			makejson("ip_addr", simmgr_shm->server.ip_addr);
@@ -628,7 +629,8 @@ simstatusHandleCommand(char *args)
 				}
 			}
 			else if (v[1].compare("respiration") == 0)
-			{
+			{	// Debug respiration
+				printf("Calling resp Parse, \"%s\", \"%s\"\n", v[2].c_str(), value.c_str());
 				sts = respiration_parse(v[2].c_str(), value.c_str(), &simmgr_shm->instructor.respiration);
 			}
 			else if (v[1].compare("general") == 0)
@@ -795,13 +797,14 @@ simstatusHandleCommand(char *args)
 	{
 		releaseLock(ss_iiLockTaken);
 	}
-	
+
 	ss_iiLockTaken = 0;
 	return (0);
 }
 
 
 void
+// Non Web based
 sendSimctrData(void)
 {
 	char buffer[256];
@@ -1027,7 +1030,7 @@ sendStatus(void)
 	htmlReply += ",\n";
 	_itoa_s(simmgr_shm->status.scenario.record, buffer, 256, 10);
 	makejson("record", buffer);
-	htmlReply += ",\n"; 
+	htmlReply += ",\n";
 	if (strlen(simmgr_shm->status.scenario.error_message) > 0)
 	{
 		makejson("error_message", simmgr_shm->status.scenario.error_message);
@@ -1225,6 +1228,8 @@ sendStatus(void)
 	_itoa_s(simmgr_shm->status.respiration.breathCount, buffer, 256, 10);
 	makejson("breathCount", buffer);
 	htmlReply += ",\n";
+	makejson("rhythm", simmgr_shm->status.respiration.rhythm);
+	htmlReply += ",\n";
 	_itoa_s(simmgr_shm->status.respiration.spo2, buffer, 256, 10);
 	makejson("spo2", buffer);
 	htmlReply += ",\n";
@@ -1333,9 +1338,9 @@ sendStatus(void)
 		vidCount++;
 
 		//makejson("name", "");
-		
-		
-		if ( strlen(simmgr_shm->status.telesim.vid[i].name) > 0 )
+
+
+		if (strlen(simmgr_shm->status.telesim.vid[i].name) > 0)
 		{
 			makejson("name", simmgr_shm->status.telesim.vid[i].name);
 		}
@@ -1344,7 +1349,7 @@ sendStatus(void)
 			makejson("name", "");
 		}
 		htmlReply += ",\n";
-		
+
 		_itoa_s(simmgr_shm->status.telesim.vid[i].command, buffer, 256, 10);
 		makejson("command", buffer);
 		htmlReply += ",\n";
@@ -1353,7 +1358,7 @@ sendStatus(void)
 		htmlReply += ",\n";
 		_itoa_s(simmgr_shm->status.telesim.vid[i].next, buffer, 256, 10);
 		makejson("next", buffer);
-		
+
 		htmlReply += "  }";
 	}
 	if (vidCount > 0)
@@ -1500,7 +1505,7 @@ sendQuickStatus(void)
 
 	htmlReply += " \"defibrillation\" : {\n";
 	_itoa_s(simmgr_shm->status.defibrillation.shock, buffer, 256, 10);
-	makejson("shock",  buffer);
+	makejson("shock", buffer);
 	htmlReply += "\n},\n";
 
 	htmlReply += " \"cpr\" : {\n";
@@ -1538,7 +1543,7 @@ void replaceAll(char* args, size_t len, const char* needle, const char replace)
 		size_t i;
 		for (i = 0; i < len; i++)
 		{
-			if ( args[i] == needle[0] )
+			if (args[i] == needle[0])
 			{
 				args[i] = replace;
 			}
