@@ -417,6 +417,7 @@ resetAllParameters(void)
 	simmgr_shm->status.respiration.spo2 = 95;
 	simmgr_shm->status.respiration.etco2 = 34;
 	sprintf_s(simmgr_shm->status.respiration.rhythm, STR_SIZE, "%s", "normal");
+	simmgr_shm->status.respiration.co2exhale = 0;
 	simmgr_shm->status.respiration.etco2_indicator = 0;
 	simmgr_shm->status.respiration.spo2_indicator = 0;
 	simmgr_shm->status.respiration.chest_movement = 0;
@@ -1818,6 +1819,12 @@ scan_commands(void)
 			simmgr_shm->status.respiration.etco2,
 			simmgr_shm->instructor.respiration.transfer_time);
 		simmgr_shm->instructor.respiration.etco2 = -1;
+	}
+	// Apply instructor baseline CO2 exhale value (0..30 chart scale)
+	if (simmgr_shm->instructor.respiration.co2exhale >= 0)
+	{
+		simmgr_shm->status.respiration.co2exhale = simmgr_shm->instructor.respiration.co2exhale;
+		simmgr_shm->instructor.respiration.co2exhale = -1;
 	}
 	if (simmgr_shm->instructor.respiration.etco2_indicator >= 0)
 	{

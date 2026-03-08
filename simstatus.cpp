@@ -1236,6 +1236,9 @@ sendStatus(void)
 	_itoa_s(simmgr_shm->status.respiration.etco2, buffer, 256, 10);
 	makejson("etco2", buffer);
 	htmlReply += ",\n";
+	_itoa_s(simmgr_shm->status.respiration.co2exhale, buffer, 256, 10);
+	makejson("co2exhale", buffer);
+	htmlReply += ",\n";
 	_itoa_s(simmgr_shm->status.respiration.rate, buffer, 256, 10);
 	makejson("rate", buffer);
 	htmlReply += ",\n";

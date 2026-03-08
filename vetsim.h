@@ -190,6 +190,7 @@ struct respiration
 	int etco2;					// End Tidal CO2
 	int transfer_time;			// Trend length for change in rate;
 	char rhythm[STR_SIZE];		// Rhythm for breathing pattern
+	int co2exhale;              // baseline from 0 to 30 in chart
 	int etco2_indicator;
 	int spo2_indicator;
 	int chest_movement;

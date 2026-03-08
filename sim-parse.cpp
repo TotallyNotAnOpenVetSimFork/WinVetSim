@@ -244,7 +244,6 @@ respiration_parse(const char* elem, const char* value, struct respiration* resp)
 	else if (strcmp(elem, "rhythm") == 0)
 	{
 
-		// Accept textual respiration rhythm values from the instructor (e.g. "normal", "apnea", "irregular")
 		sprintf_s(resp->rhythm, STR_SIZE, "%s", value);
 	}
 	/* These are set by sim-mgr, not instructor
@@ -288,6 +287,11 @@ respiration_parse(const char* elem, const char* value, struct respiration* resp)
 	else if (strcmp(elem, "etco2") == 0)
 	{
 		resp->etco2 = atoi(value);
+	}
+	else if (strcmp(elem, "co2exhale") == 0)
+	{
+		// Accept the client-supplied baseline CO2 exhale value (0..30 chart scale)
+		resp->co2exhale = atoi(value);
 	}
 	else if (strcmp(elem, "transfer_time") == 0)
 	{
@@ -630,6 +634,7 @@ initializeParameterStruct(struct instructor* initParams)
 	initParams->respiration.manual_count = -1;
 	// rhythm: empty string means "no change" when used as instructor staging
 	initParams->respiration.rhythm[0] = 0;
+	initParams->respiration.co2exhale = -1;
 
 	initParams->general.temperature = -1;
 	initParams->general.temperature_enable = -1;
